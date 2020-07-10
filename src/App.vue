@@ -10,6 +10,7 @@ export default {};
 <style lang="css" >
 .app {
   height: 100%;
+  overflow: hidden;
 }
 </style>
 <style lang="less" scoped>

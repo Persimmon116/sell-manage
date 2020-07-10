@@ -54,7 +54,7 @@
             <span>销售统计</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/salestatistics/goods-statistics">商品统计</el-menu-item>
+            <el-menu-item index="/salestatistics/goods-tatistics">商品统计</el-menu-item>
             <el-menu-item index="/salestatistics/order-statistics">订单统计</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
@@ -88,10 +88,10 @@ export default {
 
 <style lang="less" scoped>
 .home {
-  height: 1250px;
-  // display: flex;
   background-color: #304156;
-
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .nav {
     user-select: none;
     width: 280px;

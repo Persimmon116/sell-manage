@@ -46,6 +46,9 @@ export default {
   box-sizing: border-box;
   .container {
     background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
     padding: 20px;
     box-sizing: border-box;
     p {

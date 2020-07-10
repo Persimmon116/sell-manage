@@ -1,7 +1,7 @@
 <template>
-  <div class="account-list">
-    <div class="account-container">
-      <h1 class="title">账号列表</h1>
+  <Panel class="account-list">
+    <span class="account-list-title" slot="title">账号列表</span>
+    <div slot="content">
       <el-table
         ref="multipleTable"
         :data="tableData"
@@ -10,11 +10,15 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"></el-table-column>
+
         <el-table-column label="账号" width="180">
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
+
         <el-table-column prop="userGroup" label="用户组" width="180"></el-table-column>
-        <el-table-column prop="date" label="创建时间" show-overflow-tooltip width="220"></el-table-column>
+
+        <el-table-column prop="date" label="创建时间" show-overflow-tooltip width="180"></el-table-column>
+
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -26,7 +30,7 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="currentPage"
           :page-sizes="[5, 10, 15, 20,25,30,35]"
           :page-size="5"
           layout="total, sizes, prev, pager, next, jumper"
@@ -38,17 +42,18 @@
         <el-button type="success" size="small">取消选择</el-button>
       </div>
     </div>
-  </div>
+  </Panel>
 </template>
 
 <script>
+import Panel from "@/components/panel/Panel.vue";
 export default {
+  components: {
+    Panel
+  },
   data() {
     return {
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 5,
       total: 35,
       tableData: [
         {
@@ -100,35 +105,34 @@ export default {
 
 <style lang="less" scoped>
 .account-list {
-  padding: 0 20px;
+  background-color: #fff;
+  padding: 20px;
   box-sizing: border-box;
-  .account-container {
-    background-color: #fff;
-    padding-bottom: 10px;
-    /deep/.el-table {
-      margin-bottom: 20px;
-      /deep/.el-table__header-wrapper {
-        margin-left: 20px;
-      }
-      /deep/.el-table__body-wrapper {
-        margin-left: 20px;
-      }
-    }
-    .title {
-      padding: 10px;
-      box-sizing: border-box;
-      border-bottom: solid 1px #f1f1f1;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    .pager {
+  margin: 0 20px;
+  /deep/.el-table {
+    margin-bottom: 20px;
+    /deep/.el-table__header-wrapper {
       margin-left: 20px;
-      margin-bottom: 20px;
     }
-    .btn {
+    /deep/.el-table__body-wrapper {
       margin-left: 20px;
-      margin-bottom: 20px;
     }
+  }
+  .account-list-title {
+    font-size: 16px;
+    font-weight: 700;
+    padding-bottom: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  .pager {
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  .btn {
+    margin-left: 20px;
+    margin-bottom: 20px;
   }
 }
 </style>

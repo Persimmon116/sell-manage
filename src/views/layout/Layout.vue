@@ -23,7 +23,8 @@ export default {
     Nav,
     LayoutMenu,
     Home
-  }
+  },
+  methods: {}
 };
 </script>
 
@@ -32,8 +33,10 @@ export default {
   height: 100%;
   display: flex;
   .rightContent {
-    width: 100%;
+    // width: 100%;
+    flex: 1;
     background-color: #f0f2f5;
+
     display: flex;
     flex-direction: column;
     flex: 1;

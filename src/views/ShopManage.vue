@@ -8,7 +8,7 @@
       <div class="form-content">
         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="店铺名称">
-            <el-input v-model="form.name" placeholder="请输入店铺名称"></el-input>
+            <el-input size="medium" v-model="form.name" placeholder="请输入店铺名称"></el-input>
           </el-form-item>
           <el-form-item label="店铺公告">
             <el-input type="textarea" v-model="form.desc" placeholder="请输入店铺公告"></el-input>
@@ -132,14 +132,21 @@ export default {
 <style lang="less" scoped>
 .shop-manage {
   padding: 0 10px;
+  height: 100%;
+
   .shop {
     background-color: #fff;
+    height: 100%;
     padding: 10px;
+    display: flex;
+    overflow-y: scroll;
+    flex-direction: column;
     .header {
       display: flex;
       justify-content: space-between;
       border-bottom: 1px solid #f1f1f1;
       margin-bottom: 10px;
+      flex: 0 0 32px;
       .title {
         font-size: 16px;
         margin-bottom: 10px;
@@ -151,7 +158,12 @@ export default {
     }
     .form-content {
       padding: 0 5px;
-      width: 400px;
+      height: 100%;
+      flex: 1;
+      width: 100%;
+      .el-form {
+        height: 100%;
+      }
       .shop-portrait {
         display: flex;
         margin-left: 10px;

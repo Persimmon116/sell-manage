@@ -1,7 +1,7 @@
 <template>
   <div class="Statistics">
     <div class="top">
-      <div class="item" v-for="(v,i) in Item" :key="i">
+      <!-- <div class="item" v-for="(v,i) in Item" :key="i">
         <div class="img">
           <img :src="v.imgSrc" alt />
         </div>
@@ -9,7 +9,12 @@
           <p class="text">{{v.text}}</p>
           <p class="num">{{v.number}}</p>
         </div>
-      </div>
+      </div>-->
+      <el-row :gutter="20">
+        <el-col :span="6" v-for="i in Item" :key="i.title">
+          <Card :cardData="i" />
+        </el-col>
+      </el-row>
     </div>
     <div class="statistical-curve">
       <Echarts />
@@ -19,33 +24,35 @@
 
 <script>
 // Echarts
+import Card from "@/components/card/Card.vue";
 import Echarts from "./Echarts.vue";
 export default {
   components: {
-    Echarts
+    Echarts,
+    Card
   },
   data() {
     return {
       Item: [
         {
-          imgSrc: require("@/assets/images/order.png"),
-          text: "总订单",
-          number: 102400
+          imgUrl: require("@/assets/images/order.png"),
+          title: "总订单",
+          count: 102400
         },
         {
-          imgSrc: require("@/assets/images/sales-volume.png"),
-          text: "总销售额",
-          number: 102400
+          imgUrl: require("@/assets/images/sales-volume.png"),
+          title: "总销售额",
+          count: 102400
         },
         {
-          imgSrc: require("@/assets/images/order-num.png"),
-          text: "今日订单数",
-          number: 102400
+          imgUrl: require("@/assets/images/order-num.png"),
+          title: "今日订单数",
+          count: 102400
         },
         {
-          imgSrc: require("@/assets/images/today-sales-volume.png"),
-          text: "今日销售额",
-          number: 102400
+          imgUrl: require("@/assets/images/today-sales-volume.png"),
+          title: "今日销售额",
+          count: 102400
         }
       ]
     };
@@ -61,37 +68,10 @@ export default {
   display: flex;
   flex-direction: column;
   .top {
-    display: flex;
-    flex: 0 0 100px;
     margin-bottom: 50px;
-    justify-content: space-between;
-    .item {
-      height: 100px;
-      width: 264px;
-      padding: 20px 50px;
-      box-sizing: border-box;
-      background-color: #fff;
-      display: flex;
-      justify-content: space-between;
-      > .img {
-        height: 100%;
-        margin-right: 20px;
-      }
-      .sales-data {
-        height: 100%;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        .text {
-          color: #ccc;
-        }
-      }
-    }
   }
   .statistical-curve {
     flex: 1;
-    // overflow: auto;
   }
 }
 </style>

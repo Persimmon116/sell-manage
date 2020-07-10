@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { PwdReg, NameReg, Chinese } from "@/utils/reg";
 export default {
   data() {
     return {
@@ -74,8 +75,6 @@ export default {
     },
     //失去焦点事件 验证用户名
     checkUserName() {
-      // 定义变量保存正则表达式
-      var uPattern = /^[a-zA-Z0-9_-]{4,16}$/;
       // 判断用户名是否为空
       if (!this.username) {
         this.userNameMsg = "用户名不能为空";
@@ -85,29 +84,24 @@ export default {
         this.userNameMsg = "";
       }
       // 判断用户名是否合法
-      if (!uPattern.test(this.username)) {
+      if (!NameReg.test(this.username)) {
         this.userNameMsg = "用户名不合法";
       }
     },
     //获取焦点事件 验证密码
     checkPassword() {
       // 密码提示信息
-      this.pwdMsg =
-        "最少6位，包括至少一位大写字母，一位小写字母，一个数字，一个特殊字符";
+      this.pwdMsg = "最少4位，包括至少一位小写字母，一个数字";
       // 如果type为text时
       if (this.type == "text") {
-        // 保存正则
-        var uPattern = /^[^\u4e00-\u9fa5]+$/;
         // 判断输入是否为中文;
-        if (!uPattern.test(this.pwd)) {
+        if (!Chinese.test(this.pwd)) {
           this.pwdMsg = "密码不能为中文";
         }
       }
     },
     //失去焦点事件 验证密码
     checkPwd() {
-      // 定义变量保存正则
-      var uPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[$@!%*#?&])[A-Za-z\d$@!%*#?&]{6,}$/;
       // 判断密码是否为空
       if (!this.pwd) {
         this.pwdMsg = "密码不能为空";
@@ -117,7 +111,7 @@ export default {
         this.pwdMsg = "";
       }
       // 判断密码是否合法
-      if (!uPattern.test(this.pwd)) {
+      if (!PwdReg.test(this.pwd)) {
         this.pwdMsg = "密码不合法";
       } else {
         this.pwdMsg = "";

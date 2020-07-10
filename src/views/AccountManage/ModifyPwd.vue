@@ -1,61 +1,147 @@
 <template>
-  <div class="modifypwd">
-    <h1 class="modifypwd-title">修改密码</h1>
-    <div class="modifypwd-container">
+  <Panel class="modifypwd">
+    <span slot="title" class="modifypwd-title">修改密码</span>
+    <div slot="content" class="modifypwd-container">
       <el-form
         :model="resetForm"
+        :rules="rules"
         size="small "
-        status-icon
+        ref="resetForm"
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="原密码" prop="password">
+        <!-- 原密码 -->
+        <el-form-item label="原密码" prop="oldPassword">
           <el-input
             type="password"
-            v-model="resetForm.password"
+            v-model="resetForm.oldPassword"
             autocomplete="off"
             placeholder="请输入原密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新密码" prop="newpassword">
+
+        <!-- 新密码 -->
+        <el-form-item label="新密码" prop="newPassword">
           <el-input
-            type="password"
-            v-model="resetForm.newpassword"
+            type="text"
+            v-model="resetForm.newPassword"
             autocomplete="off"
             placeholder="请输入新密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="确认新密码" prop="confirmnewpwd">
+
+        <!-- 确认新密码 -->
+        <el-form-item label="确认新密码" prop="confirmnewPwd">
           <el-input
-            type="password"
-            v-model="resetForm.confirmnewpwd"
+            type="text"
+            v-model="resetForm.confirmnewPwd"
             autocomplete="off"
             placeholder="请再次输入新密码"
           ></el-input>
         </el-form-item>
+
+        <!-- 按钮 -->
         <div class="sub-reset-btn">
-          <el-button size="mini" type="primary">提交</el-button>
-          <el-button size="mini">重置</el-button>
+          <el-button size="mini" type="primary" @click="submitForm">提交</el-button>
+          <el-button size="mini" @click="resForm">重置</el-button>
         </div>
       </el-form>
     </div>
-  </div>
+  </Panel>
 </template>
 
 <script>
+// 面板组件
+import Panel from "@/components/panel/Panel.vue";
+// 引入正则
+import { NameReg, PwdReg } from "@/utils/reg";
 export default {
+  components: {
+    Panel
+  },
+
   data() {
+    // 返回对象前定义函数
+    const oldPassword = (rule, val, callback) => {
+      // 判断是否为空
+      if (!val) {
+        callback(new Error("请输入原密码"));
+      } else {
+        callback();
+      }
+    };
+    const newPassword = (rule, val, callback) => {
+      // 判断是否为空
+      if (!val) {
+        callback(new Error("请输入新密码"));
+        // 判断两次是否一致
+      } else if (!PwdReg.test(val)) {
+        callback(new Error("最少4位，包括至少一位小写字母，一个数字"));
+        // 成功
+      } else {
+        // 反向验证
+        if (this.confirmnewPwd !== "") {
+          this.$refs.resetForm.validateField("confirmnewPwd");
+        }
+        callback();
+      }
+    };
+    const confirmnewPwd = (rule, val, callback) => {
+      // 判断是否为空
+      if (!val) {
+        callback(new Error("请再次输入新密码"));
+        // 判断两次是否一致
+      } else if (val !== this.resetForm.newPassword) {
+        callback(new Error("两次密码不一致"));
+        // 成功
+      } else {
+        callback();
+      }
+    };
     return {
       //修改密码
       resetForm: {
         //原密码
-        password: "",
+        oldPassword: "",
         //新密码
-        newpassword: "",
+        newPassword: "",
         //确认新密码
-        confirmnewpwd: ""
+        confirmnewPwd: ""
+      },
+      rules: {
+        //原密码
+        oldPassword: {
+          required: true,
+          validator: oldPassword,
+          trigger: "blur"
+        },
+        //新密码
+        newPassword: {
+          required: true,
+          validator: newPassword,
+          trigger: "blur"
+        },
+        // 确认新密码
+        confirmnewPwd: {
+          required: true,
+          validator: confirmnewPwd,
+          trigger: "blur"
+        }
       }
     };
+  },
+  methods: {
+    submitForm() {
+      this.$refs.resetForm.validate(valid => {
+        if (valid) {
+        } else {
+          return false;
+        }
+      });
+    },
+    resForm() {
+      this.$refs.resetForm.resetFields();
+    }
   }
 };
 </script>
