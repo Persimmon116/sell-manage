@@ -1,6 +1,6 @@
 <template>
   <div
-    :style="{width: '100%',padding:'20px',boxSiing:'border-box',backgroundColor:'#fff', height: '400px'}"
+    :style="{width: '95%',padding:'20px',boxSiing:'border-box',backgroundColor:'#fff', height: '400px'}"
     id="myCharts"
     ref="myCharts"
   ></div>

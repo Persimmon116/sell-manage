@@ -48,12 +48,12 @@
           <el-button type="primary" size="medium">查询</el-button>
         </div>
       </div>
-      <div class="middle">
+      <div>
         <el-table :data="tableData" border>
           <el-table-column prop="orderNum" label="订单号" width="120"></el-table-column>
           <el-table-column fixed prop="date" label="下单时间" width="150"></el-table-column>
           <el-table-column prop="tel" label="手机号" width="120"></el-table-column>
-          <el-table-column prop="consignee" label="收货人" width="120"></el-table-column>
+          <el-table-column prop="name" label="收货人" width="120"></el-table-column>
           <el-table-column prop="address" label="配送地址" width="300"></el-table-column>
           <el-table-column prop="serviceDate" label="送达时间" width="120"></el-table-column>
           <el-table-column prop="remarks" label="用户备注" width="120"></el-table-column>
@@ -182,6 +182,12 @@ export default {
     handleClick(row) {
       // console.log(row);
     }
+  },
+  computed: {
+    computedWidth() {
+      // return document.body.clientWidth - 290 + "px";
+      console.log(document.body.clientWidth - 290 + "px");
+    }
   }
 };
 </script>
@@ -235,9 +241,6 @@ export default {
           }
         }
       }
-    }
-    .middle {
-      width: 1200px;
     }
   }
 }

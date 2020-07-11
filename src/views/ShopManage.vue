@@ -131,9 +131,8 @@ export default {
 
 <style lang="less" scoped>
 .shop-manage {
-  padding: 0 10px;
   height: 100%;
-
+  overflow-y: hidden;
   .shop {
     background-color: #fff;
     height: 100%;
@@ -157,6 +156,7 @@ export default {
       }
     }
     .form-content {
+      // margin-bottom: 10px;
       padding: 0 5px;
       height: 100%;
       flex: 1;

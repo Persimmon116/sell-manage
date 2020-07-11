@@ -3,8 +3,8 @@
     <span slot="title" class="addaccount-title">添加账号</span>
     <div slot="content" class="addaccount-container">
       <el-form
-        :model="addForm"
-        ref="addForm"
+        :model="addAccount"
+        ref="addAccount"
         :rules="rules"
         size="small "
         label-width="100px"
@@ -12,14 +12,14 @@
       >
         <!-- 账号 -->
         <el-form-item label="账号" prop="account">
-          <el-input type="text" v-model="addForm.account" autocomplete="off" placeholder="请输入账号"></el-input>
+          <el-input type="text" v-model="addAccount.account" autocomplete="off" placeholder="请输入账号"></el-input>
         </el-form-item>
 
         <!-- 密码 -->
         <el-form-item label="密码" prop="password">
           <el-input
             type="password"
-            v-model="addForm.password"
+            v-model="addAccount.password"
             autocomplete="off"
             placeholder="请输入密码"
           ></el-input>
@@ -27,7 +27,7 @@
 
         <!-- 用户组 -->
         <el-form-item label="用户组" prop="userGroup">
-          <el-select v-model="addForm.userGroup" placeholder="请选择用户组">
+          <el-select v-model="addAccount.userGroup" placeholder="请选择用户组">
             <el-option label="超级管理员" value="超级管理员"></el-option>
             <el-option label="普通管理员" value="普通管理员"></el-option>
           </el-select>
@@ -48,6 +48,8 @@
 import Panel from "@/components/panel/Panel.vue";
 // 引入正则
 import { NameReg, PwdReg } from "@/utils/reg";
+// 引入axios函数
+import { addAccount } from "@/api/account";
 export default {
   components: {
     Panel
@@ -80,7 +82,7 @@ export default {
     };
     return {
       //添加账号
-      addForm: {
+      addAccount: {
         //账号
         account: "",
         //密码
@@ -106,8 +108,14 @@ export default {
   methods: {
     // 提交
     submitForm() {
-      this.$refs.addForm.validate(valid => {
+      this.$refs.addAccount.validate(async valid => {
         if (valid) {
+          let { code } = await addAccount(this.addAccount);
+
+          // 判断是否通过
+          if (code === 0) {
+            this.$router.push("/accountmanage/account-list");
+          }
         } else {
           return false;
         }
