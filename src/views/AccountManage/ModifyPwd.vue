@@ -37,6 +37,7 @@
             v-model="resetForm.confirmnewPwd"
             autocomplete="off"
             placeholder="请再次输入新密码"
+            @change.native.enter="submitForm"
           ></el-input>
         </el-form-item>
 
@@ -55,6 +56,10 @@
 import Panel from "@/components/panel/Panel.vue";
 // 引入正则
 import { NameReg, PwdReg } from "@/utils/reg";
+// 引入axios
+import { checkOldPwd, editPwd } from "@/api/account";
+// 引入本地存储
+import local from "@/utils/local";
 export default {
   components: {
     Panel
@@ -132,8 +137,40 @@ export default {
   },
   methods: {
     submitForm() {
-      this.$refs.resetForm.validate(valid => {
+      this.$refs.resetForm.validate(async valid => {
         if (valid) {
+          // 发送验证原密码请求
+          let { code } = await checkOldPwd({
+            oldPwd: this.resetForm.oldPassword
+          });
+          // 成功
+          if (code == "00") {
+            // 判断新密码和旧密码重复不重复
+            if (
+              this.resetForm.newPassword == this.resetForm.oldPassword &&
+              this.resetForm.newPassword !== ""
+            ) {
+              // 如果重复，弹框提示
+              this.$message.error("新密码不能和原密码一致哦亲");
+              return;
+            }
+            // 发送修改密码请求
+            let { code } = await editPwd({
+              newPwd: this.resetForm.newPassword
+            });
+            // 成功
+            if (code == "0") {
+              // 清除本地存储
+              local.clear();
+              // 跳转到登录页面
+              this.$router.push("/logon");
+            }
+            // 失败
+          } else if (code == "11") {
+            this.$message.error("原密码不正确");
+            return;
+          }
+          // 失败
         } else {
           return false;
         }

@@ -18,15 +18,15 @@
       </el-col>
       <el-col class="right-box" :span="12">
         <!-- 右侧 -->
-        <el-dropdown>
+        <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            欢迎你，小貂蝉
+            欢迎你，{{userName}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="a">个人中心</el-dropdown-item>
-            <el-dropdown-item command="b">退出系统</el-dropdown-item>
+            <el-dropdown-item command="personal">个人中心</el-dropdown-item>
+            <el-dropdown-item command="login">退出系统</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
@@ -38,12 +38,17 @@
 </template>
 
 <script>
+// 引入本地存储
+import local from "@/utils/local";
+// 引入axios
+import { getUserInfo } from "@/api/account";
 export default {
   data() {
     return {
       // 头像
-      avatar:
-        "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+      avatar: "",
+      // 用户名
+      userName: "",
       // 面包屑数组
       crumbsArr: []
     };
@@ -61,14 +66,32 @@ export default {
             title: v.meta.title,
             path: v.path
           });
-          console.log(arr);
         }
         this.crumbsArr = arr;
       });
+    },
+    // 退出登录  个人中心
+    handleCommand(cmd) {
+      // 如果cmd等于personal
+      if (cmd == "personal") {
+        // 跳转到个人中心
+        this.$router.push("/accountmanage/personal");
+      } else {
+        // 弹框提示
+        this.$message({ type: "success", message: "欢迎下次登录" });
+        // 清除本地存储
+        local.clear();
+        // 跳转到登录页面
+        this.$router.push("/login");
+      }
     }
   },
-  created() {
+  async created() {
     this.crumbs();
+    let info1 = await getUserInfo();
+    let info = { ...info1.accountInfo };
+    this.avatar = info.imgUrl;
+    this.userName = info.account;
   },
   // 侦听器
   watch: {

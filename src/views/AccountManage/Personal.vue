@@ -27,15 +27,32 @@
 </template>
 
 <script>
+// 引入axios
+import { getUserInfo } from "@/api/account";
+// 引入处理时间格式
+import moment from "moment";
+
+import local from "@/utils/local";
 export default {
   data() {
     return {
-      id: 123,
-      account: "小凋残",
-      userGroup: "用户组1",
-      time: "2020/07/07",
-      imgSrc: require("@/assets/images/elm.png")
+      id: "",
+      account: "",
+      userGroup: "",
+      time: "",
+      imgSrc: ""
     };
+  },
+  async created() {
+    let info1 = await getUserInfo();
+    let info = { ...info1.accountInfo };
+    this.id = info.id;
+    this.account = info.account;
+    this.userGroup = info.userGroup;
+    // 时间处理
+    info.ctime = moment(info.ctime).format("YYYY-MM-DD hh:mm:ss");
+    this.time = info.ctime;
+    this.imgSrc = info.imgUrl;
   }
 };
 </script>

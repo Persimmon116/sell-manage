@@ -36,7 +36,7 @@
       </div>
       <div class="btn">
         <el-button type="danger" size="small" @click="batchDel">批量删除</el-button>
-        <el-button type="success" size="small">取消选择</el-button>
+        <el-button type="success" size="small" @click="cancelSelect">取消选择</el-button>
       </div>
       <!-- 编辑模态框 -->
       <el-dialog title="编辑账号" :visible.sync="dialogVisible" width="360px">
@@ -101,7 +101,6 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize
       });
-      console.log(data);
       // 处理时间
       data.forEach(v => {
         v.ctime = moment(v.ctime).format("YYYY-MM-DD hh:mm:ss");
@@ -144,16 +143,6 @@ export default {
           });
         });
     },
-
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
     // 当选项发生改变时
     handleSelectionChange(rows) {
       this.ids = rows.map(v => v.id);
@@ -187,6 +176,10 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    // 取消选择
+    cancelSelect() {
+      this.$refs.accTable.clearSelection();
     },
     // 编辑数据回填  传入行
     handleEdit(row) {

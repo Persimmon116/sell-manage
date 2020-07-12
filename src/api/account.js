@@ -29,3 +29,15 @@ export function batchDel(params) {
 export function saveEditAccount(params) {
     return req.post("/users/edit", params);
 }
+/* 验证旧密码 */
+export function checkOldPwd(params) {
+    return req.get("/users/checkoldpwd", params);
+}
+/* 修改密码 */
+export function editPwd(params) {
+    return req.post("/users/editpwd", params);
+}
+/* 获取去用户资料 */
+export function getUserInfo() {
+    return req.get("/users/info");
+}
