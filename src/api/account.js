@@ -41,3 +41,7 @@ export function editPwd(params) {
 export function getUserInfo() {
     return req.get("/users/info");
 }
+/* 修改图片 */
+export function editAvatar(params) {
+    return req.get("/users/avataredit", params);
+}

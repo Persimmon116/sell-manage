@@ -4,35 +4,48 @@
     <div class="goods-add-content" slot="content">
       <el-form>
         <el-form-item label="商品名称" label-width="100px">
-          <el-input placeholder="请输入商品名称"></el-input>
+          <el-input placeholder="请输入商品名称" v-model="goodsAddForm.name"></el-input>
         </el-form-item>
         <el-form-item label="商品分类" label-width="100px">
-          <el-select v-model="goodsSort.sort" placeholder="请选择商品分类">
-            <el-option label="水果" value="水果"></el-option>
-            <el-option label="小吃" value="小吃"></el-option>
-            <el-option label="零食" value="零食"></el-option>
+          <el-select v-model="goodsAddForm.category">
+            <el-option
+              v-for="cate in categories"
+              :key="cate.cateName"
+              :value="cate.cateName"
+            >{{ cate.cateName }}</el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item label="商品价格" label-width="100px">
-          <el-input-number v-model="num" @change="handleChange" :min="min" :max="max"></el-input-number>
+          <el-input-number v-model="goodsAddForm.price" :min="1" :max="2000"></el-input-number>
         </el-form-item>
+
+        <!-- 商品图片 -->
         <el-form-item label="商品图片" label-width="100px">
+          <!-- 商品图片上传组件 -->
           <el-upload
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            action="http://127.0.0.1:5000/goods/goods_img_upload"
             :before-upload="beforeAvatarUpload"
+            :on-success="handleAvatarSuccess"
+            :show-file-list="false"
+            class="avatar-uploader"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img v-if="goodsAddForm.imgUrl" :src="imgBaseUrl + goodsAddForm.imgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
+
         <el-form-item label="商品描述" label-width="100px">
-          <el-input type="textarea" :rows="2" placeholder="请输入商品描述" v-model="textarea"></el-input>
+          <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="请输入商品描述"
+            v-model="goodsAddForm.goodsDesc"
+          ></el-input>
         </el-form-item>
+
         <el-form-item label-width="100px">
-          <el-button size="small" type="primary">添加商品</el-button>
+          <el-button size="small" type="primary" @click="submitForm">添加商品</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -41,6 +54,7 @@
 
 <script>
 import Panel from "@/components/panel/Panel.vue";
+import { getCateName, addCate } from "@/api/goods";
 export default {
   components: {
     Panel
@@ -50,37 +64,58 @@ export default {
       goodsSort: {
         sort: ""
       },
-      // 商品价格初始值
-      num: 1,
-      // 商品价格最小值
-      min: 1,
-      // 商品价格最大值
-      max: 200,
-      // 商品图片
-      imageUrl: "",
-      // 商品描述
-      textarea: ""
+      // 添加商品表单
+      goodsAddForm: {
+        name: "",
+        category: "",
+        price: 0,
+        imgUrl: "",
+        goodsDesc: ""
+      },
+      // 商品分类名称
+      categories: [],
+      imgBaseUrl: "http://127.0.0.1:5000/upload/imgs/goods_img/"
     };
   },
   methods: {
-    handleChange(value) {
-      // console.log(value);
+    // 成功后
+    handleAvatarSuccess(res) {
+      let { code, msg, imgUrl } = res;
+      if (code === 0) {
+        this.$message({ type: "success", message: msg }); // 弹出成功提示
+        this.goodsAddForm.imgUrl = imgUrl; // 回填图片
+      }
     },
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-    },
+    // 上传前限制
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+        this.$message.error("上传头像图片只能是 JPG/PNG 格式!");
       }
       if (!isLt2M) {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+    // 提交商品添加
+    async submitForm() {
+      // 发送请求
+      // let { code } = await addCate(this.goodsAddForm);
+      let { code } = await addCate(this.goodsAddForm);
+      console.log(code);
+      if (code === 0) {
+        // 跳转到商品列表
+        this.$router.push("/goodsmanage/goods-list");
+      }
     }
+  },
+  // 加载完成后
+  async created() {
+    // 发送ajax请求 获取所有分类名称
+    let { categories } = await getCateName();
+    this.categories = categories; // 赋值渲染
   }
 };
 </script>

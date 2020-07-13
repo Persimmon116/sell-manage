@@ -1,72 +1,194 @@
 <template>
   <Panel class="goods-sort">
-    <span class="goods-sort-title" slot="title">
+    <span class="goods-sort-title" slot="title" slot-scope="scope">
       <span>商品分类</span>
-      <el-button type="primary" size="small">添加分类</el-button>
+      <el-button type="primary" size="small" @click="addCate(scope.row)">添加分类</el-button>
     </span>
     <div class="goods-sort-content" slot="content">
       <el-table :data="tableData">
-        <el-table-column prop="index" label="序号" width="100"></el-table-column>
+        <el-table-column type="index" label="序号" width="100"></el-table-column>
 
-        <el-table-column prop="sort" label="名称分类" width="200"></el-table-column>
+        <el-table-column prop="sort" label="分类名称" width="200">
+          <template slot-scope="scope">
+            <!-- 文字 不可编辑 -->
+            <span v-if="!scope.row.isEdit">{{ scope.row.cateName }}</span>
 
-        <el-table-column prop="nable" label="是否启用" width="200">
+            <!-- 输入框 可以编辑 -->
+            <el-input v-else size="mini" v-model="scope.row.cateName" />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="nable" label="是否启用" width="150">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.menusstate"
-              @change="change(scope.$index,scope.row)"
+              :disabled="scope.row.isEdit ? false : true"
+              v-model="scope.row.state"
               active-color="#13ce66"
-              inactive-color="#ff4949"
             ></el-switch>
           </template>
         </el-table-column>
 
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button
+              @click="editCateList(scope.row)"
+              size="mini"
+              :type="scope.row.isEdit?'success':'primary'"
+            >{{scope.row.isEdit?'完成':'编辑'}}</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout="total, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
+      <!-- 编辑模态框 -->
+      <el-dialog title="修改分类" :visible.sync="dialogVisible" width="360px">
+        <!-- 编辑表单 -->
+        <el-form :model="editForm" style="width: 275px;" size="small" label-width="60px">
+          <el-form-item label="分类名称" label-width="80px">
+            <el-input v-model="editForm.cateName"></el-input>
+          </el-form-item>
+
+          <el-form-item label="分类状态" label-width="80px">
+            <el-input v-model="editForm.state" @change.native.enter="saveEdit"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+          <el-button size="small" type="primary" @click="saveEdit">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </Panel>
 </template>
 
 <script>
 import Panel from "@/components/panel/Panel.vue";
+import { getCate, editCate, delCate, addCate } from "@/api/goods";
 export default {
   components: {
     Panel
   },
   data() {
     return {
-      value: true,
-      tableData: [
-        {
-          index: 1,
-          sort: "热销榜"
-        },
-        {
-          index: 2,
-          sort: "单人套餐"
-        },
-        {
-          index: 3,
-          sort: "冰爽饮品"
-        }
-      ]
+      currentPage: 1,
+      // 每页条数
+      pageSize: 5,
+      // 总条数
+      total: 0,
+      tableData: [],
+      //模态框状态
+      dialogVisible: false,
+      // 修改分类
+      editForm: { cateName: "", state: "" }
     };
   },
+
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row);
+    // 确定添加
+    async saveEdit() {
+      let { code } = await addCate({
+        cateName: this.editForm.cateName,
+        state: this.editForm.state
+      });
+      if (code === 0) {
+        // 刷新列表
+        this.obtainList();
+        this.editForm = {};
+        this.dialogVisible = false; // 关闭模态框
+      }
     },
-    handleDelete(index, row) {
-      console.log(index, row);
+
+    // 添加分类
+    addCate(row) {
+      // 显示编辑模态框
+      this.dialogVisible = true;
     },
-    change: function(index, row) {
-      console.log(index, row);
+    // 删除
+    async handleDelete(row) {
+      console.log(row);
+      this.$confirm("你确定删除吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        // 确认删除
+        .then(async () => {
+          // 删除
+          let { code } = await delCate({ id: row.id });
+          if (code === 0) {
+            // 重新获取数据刷新
+            this.obtainList();
+          }
+        })
+        // 取消
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 编辑分类
+    async editCateList(row) {
+      // 编辑状态取反
+      row.isEdit = !row.isEdit;
+      if (!row.isEdit) {
+        // 发送编辑请求
+        let { code } = await editCate({
+          id: row.id,
+          cateName: row.cateName,
+          state: row.state
+        });
+        if (code === 0) {
+          // 跳转到列表
+          this.$router.push("/goodsmanage/goods-list");
+        }
+      }
+    },
+    // 获取列表
+    async obtainList() {
+      let { total, data } = await getCate({
+        currentPage: this.currentPage,
+        pageSize: this.pageSize
+      });
+
+      // 处理数据
+      data.forEach(v => {
+        // 如果状态是1则变成true
+        v.state = v.state == 1 ? true : false;
+        v.isEdit = false; // 每一条数据 添加一个是否可以编辑的状态
+      });
+      // 渲染
+      this.total = total;
+      this.tableData = data;
+    },
+
+    // 当前页改变  传入页码
+    handleCurrentChange(page) {
+      // 页码变成当前页码
+      this.currentPage = page;
+      // 刷新列表
+      this.obtainList();
+    },
+    // 每页条数改变  传入条数
+    handleSizeChange(size) {
+      // 条数等于当前条数
+      this.pageSize = size;
+      // 刷新列表
+      this.obtainList();
     }
+  },
+  // 加载完成
+  created() {
+    // 获取账号列表
+    this.obtainList();
   }
 };
 </script>

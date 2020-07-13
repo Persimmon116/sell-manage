@@ -20,7 +20,7 @@
         <!-- 右侧 -->
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            欢迎你，{{userName}}
+            欢迎你，{{account}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
 
@@ -31,7 +31,7 @@
         </el-dropdown>
 
         <!-- 头像 -->
-        <el-avatar size="medium" :src="avatar"></el-avatar>
+        <el-avatar size="medium" :src="imgUrl"></el-avatar>
       </el-col>
     </el-row>
   </div>
@@ -46,9 +46,9 @@ export default {
   data() {
     return {
       // 头像
-      avatar: "",
+      imgUrl: "",
       // 用户名
-      userName: "",
+      account: "",
       // 面包屑数组
       crumbsArr: []
     };
@@ -84,14 +84,29 @@ export default {
         // 跳转到登录页面
         this.$router.push("/login");
       }
+    },
+    // 获取头像 用户名
+    async getUserInfo() {
+      // 发送请求
+      let info = await getUserInfo();
+      // 渲染
+      this.imgUrl = info.imgUrl;
+      this.account = info.account;
+      // 个人信息放入本地存储
+      local.set("info", info);
     }
   },
-  async created() {
+
+  created() {
+    // 调用面包屑
     this.crumbs();
-    let info1 = await getUserInfo();
-    let info = { ...info1.accountInfo };
-    this.avatar = info.imgUrl;
-    this.userName = info.account;
+    // 调用湖区用户信息
+    this.getUserInfo();
+
+    // 接收个人中心数据
+    this.$bus.$on("updateAvatar", () => {
+      this.getUserInfo();
+    });
   },
   // 侦听器
   watch: {
