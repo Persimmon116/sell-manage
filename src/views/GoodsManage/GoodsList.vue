@@ -1,6 +1,26 @@
 <template>
   <Panel class="goods-list">
-    <span class="goods-list-title" slot="title">商品列表</span>
+    <span class="goods-list-title" slot="title">
+      <span>商品列表</span>
+      <el-form :inline="true" size="mini" :data="goodsEditForm">
+        <el-form-item label="商品名称">
+          <el-input v-model="goodsEditForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品分类">
+          <el-select v-model="goodsEditForm.category">
+            <el-option
+              v-for="cate in categories"
+              :key="cate.cateName"
+              :value="cate.cateName"
+            >{{ cate.cateName }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="mini" @click="query">查询</el-button>
+          <el-button type="success" size="mini" @click="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </span>
     <div class="goods-list-content" slot="content">
       <el-table class="table" :data="tableData" style="width: 100%">
         <el-table-column type="expand">
@@ -66,13 +86,13 @@
       <!-- 编辑模态框 -->
       <el-dialog title="修改商品" :visible.sync="dialogVisible" width="360px">
         <!-- 编辑表单 -->
-        <el-form :model="goodsEditForm" style="width: 275px;" size="small" label-width="60px">
+        <el-form :model="editForm" style="width: 275px;" size="small" label-width="60px">
           <el-form-item label="商品名称" label-width="80px">
-            <el-input v-model="goodsEditForm.name"></el-input>
+            <el-input v-model="editForm.name"></el-input>
           </el-form-item>
 
           <el-form-item label="商品分类" label-width="80px">
-            <el-select v-model="goodsEditForm.category">
+            <el-select v-model="editForm.category">
               <el-option
                 v-for="cate in categories"
                 :key="cate.cateName"
@@ -82,7 +102,7 @@
           </el-form-item>
 
           <el-form-item label="商品价格" label-width="80px">
-            <el-input v-model="goodsEditForm.price"></el-input>
+            <el-input v-model="editForm.price"></el-input>
           </el-form-item>
           <!-- 商品图片 -->
           <el-form-item label="商品图片" label-width="80px">
@@ -94,21 +114,12 @@
               :show-file-list="false"
               class="avatar-uploader"
             >
-              <img
-                v-if="goodsEditForm.imgUrl"
-                :src="imgBaseUrl + goodsEditForm.imgUrl"
-                class="avatar"
-              />
+              <img v-if="editForm.imgUrl" :src="imgBaseUrl + editForm.imgUrl" class="avatar" />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
           <el-form-item label="商品描述" label-width="80px">
-            <el-input
-              type="textarea"
-              :rows="2"
-              placeholder="请输入商品描述"
-              v-model="goodsEditForm.goodsDesc"
-            ></el-input>
+            <el-input type="textarea" :rows="2" placeholder="请输入商品描述" v-model="editForm.goodsDesc"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -149,6 +160,14 @@ export default {
         imgUrl: "",
         goodsDesc: "",
         id: ""
+      },
+      editForm: {
+        name: "",
+        category: "",
+        price: "",
+        imgUrl: "",
+        goodsDesc: "",
+        id: ""
       }
     };
   },
@@ -158,7 +177,7 @@ export default {
       // 显示编辑模态框
       this.dialogVisible = true;
       // 数据回填   展开生成新对象
-      this.goodsEditForm = { ...row };
+      this.editForm = { ...row };
     },
     // 成功后
     handleAvatarSuccess(res) {
@@ -184,7 +203,7 @@ export default {
 
     // 提交修改
     async saveEdit() {
-      let { code } = await editGoods(this.goodsEditForm);
+      let { code } = await editGoods(this.editForm);
       if (code === 0) {
         // 刷新列表
         this.fetchData();
@@ -222,9 +241,10 @@ export default {
     async fetchData() {
       let { total, data } = await getGoodsList({
         currentPage: this.currentPage,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        name: this.goodsEditForm.name,
+        category: this.goodsEditForm.category
       });
-      console.log(data);
       // 处理ctime时间格式
       data.forEach(v => {
         v.ctime = moment(v.ctime).format("YYYY-MM-DD HH:mm:ss");
@@ -250,6 +270,21 @@ export default {
     // 每页条数改变
     handleSizeChange(size) {
       this.pageSize = size;
+      this.fetchData();
+    },
+    // 查询
+    query() {
+      this.fetchData();
+      this.currentPage = 1;
+    },
+    // 重置
+    reset() {
+      // 清空表单;
+      this.goodsEditForm = {
+        name: "",
+        category: ""
+      };
+      this.currentPage = 1;
       this.fetchData();
     }
   },
@@ -308,12 +343,13 @@ export default {
   box-sizing: border-box;
   margin: 0 20px;
   .goods-list-title {
+    display: flex;
     font-size: 16px;
     font-weight: 700;
-    padding-bottom: 20px;
     box-sizing: border-box;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #f1f1f1;
+    > span {
+      flex: 0 0 120px;
+    }
   }
   .goods-list-content {
     margin-left: 10px;

@@ -153,9 +153,6 @@ export default {
   .goods-add-title {
     font-size: 16px;
     font-weight: 700;
-    padding-bottom: 20px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
   }
   .goods-add-content {
     margin-left: 10px;

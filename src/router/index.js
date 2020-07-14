@@ -55,9 +55,9 @@ const routes = [
         meta: { title: '订单管理' }
       },
       {
-        // 订单详情
-        path: '/order/order-details',
-        component: () => import('@/views/OrderManage/OrderDetails.vue'),
+        // 订单修改
+        path: '/order/order-edit',
+        component: () => import('@/views/OrderManage/OrderEdit.vue'),
         meta: { title: '订单详情' }
 
       },

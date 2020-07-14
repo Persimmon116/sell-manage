@@ -39,7 +39,9 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
       <el-pagination
+        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-size="pageSize"
@@ -55,7 +57,9 @@
           </el-form-item>
 
           <el-form-item label="分类状态" label-width="80px">
-            <el-input v-model="editForm.state" @change.native.enter="saveEdit"></el-input>
+            <template>
+              <el-switch v-model="editForm.state" active-color="#13ce66"></el-switch>
+            </template>
           </el-form-item>
         </el-form>
 
@@ -93,6 +97,9 @@ export default {
   methods: {
     // 确定添加
     async saveEdit() {
+      if (this.editForm.state === "") {
+        this.editForm.state = true;
+      }
       let { code } = await addCate({
         cateName: this.editForm.cateName,
         state: this.editForm.state
@@ -100,7 +107,7 @@ export default {
       if (code === 0) {
         // 刷新列表
         this.obtainList();
-        this.editForm = {};
+        this.editForm = { cateName: "", state: "" };
         this.dialogVisible = false; // 关闭模态框
       }
     },
@@ -112,7 +119,6 @@ export default {
     },
     // 删除
     async handleDelete(row) {
-      console.log(row);
       this.$confirm("你确定删除吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -147,8 +153,7 @@ export default {
           state: row.state
         });
         if (code === 0) {
-          // 跳转到列表
-          this.$router.push("/goodsmanage/goods-list");
+          this.obtainList();
         }
       }
     },
@@ -158,7 +163,11 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize
       });
-
+      // 边界判断 如果当前页码没有数据了 且 当前页码不是第一页
+      if (!data.length && this.currentPage !== 1) {
+        this.currentPage -= 1; // 页码-1
+        this.obtainList(); // 重新获取数据
+      }
       // 处理数据
       data.forEach(v => {
         // 如果状态是1则变成true

@@ -80,6 +80,8 @@ export default {
   //   计算属性
   computed: {
     curActive() {
+      if (this.$route.path === "/order/order-edit")
+        return "/order/order-manage";
       return this.$route.path;
     }
   }
