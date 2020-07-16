@@ -14,6 +14,7 @@ import '@/assets/css/reset.css'
 import Login from '@/views/Login.vue'
 // 布局模块
 import Layout from '@/views/layout/Layout.vue'
+import Err404 from '@/views/404.vue'
 
 // 本地存储
 import local from '@/utils/local'
@@ -22,6 +23,11 @@ const routes = [
   {
     path: '/',
     redirect: "/home"//重定向
+  },
+  {
+    // 404
+    path: '/404',
+    component: Err404
   },
   {
     // 登陆模块
@@ -165,6 +171,12 @@ const routes = [
     ]
 
   },
+  {
+    path: '*', // 页面不存在的情况下会跳到404页面
+    redirect: '/404',
+    name: 'notFound',
+    hidden: true
+  }
 ]
 
 const router = new VueRouter({

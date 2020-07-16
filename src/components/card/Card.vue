@@ -31,8 +31,8 @@ export default {
   margin-bottom: 50px;
   justify-content: space-between;
   .item {
-    height: 100px;
-    width: 264px;
+    height: 90px;
+    width: 244px;
     padding: 20px 20px;
     box-sizing: border-box;
     background-color: #fff;

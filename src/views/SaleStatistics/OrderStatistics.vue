@@ -1,32 +1,35 @@
 <template>
   <div class="goodstatistics">
     <div class="time">
-      <div class="block">
-        <span class="demonstration">时间范围</span>
-        <el-date-picker
-          v-model="value2"
-          type="datetimerange"
-          :picker-options="pickerOptions"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          align="right"
-        ></el-date-picker>
-      </div>
-      <el-button type="primary" size="mini">查询</el-button>
+      <el-form label-width="70px" class="date">
+        <el-form-item style="font-weight: 700;" label="时间范围">
+          <el-date-picker
+            v-model="date"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          ></el-date-picker>
+        </el-form-item>
+      </el-form>
+
+      <el-button type="primary" size="mini" @click="query">查询</el-button>
     </div>
-    <div class="OrderStatisticsEcharts">
-      <order-statistics-echarts />
+    <div class="GoodStatisticsEcharts">
+      <BarEcharts :options="options" />
     </div>
   </div>
 </template>
 
 <script>
 //引入Echarts
-import OrderStatisticsEcharts from "./OrderStatisticsEcharts.vue";
+import BarEcharts from "@/components/BarEcharts/BarEcharts.vue";
+import { getGoodsTotal } from "@/api/order";
+import moment from "moment";
+
 export default {
   components: {
-    OrderStatisticsEcharts
+    BarEcharts
   },
   data() {
     return {
@@ -61,9 +64,48 @@ export default {
           }
         ]
       },
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
-      value2: ""
+      options: {
+        title: "订单统计",
+        lengend: ["订单金额"],
+        xAxisData: [],
+        series: []
+      },
+      date: []
     };
+  },
+  methods: {
+    // 获取
+    async getGoodsTotal() {
+      // 发送请求前处理参数
+      if (this.date != null) {
+        this.date = this.date.map(v => moment(v).format("YYYY-MM-DD HH:mm:ss"));
+      }
+      // 发送请求
+      let { data } = await getGoodsTotal({
+        date: this.date == null ? JSON.stringify([]) : JSON.stringify(this.date)
+      });
+      // 处理参数 赋值渲染
+      this.options.xAxisData = data.map(v =>
+        moment(v.orderTime).format("YYYY-MM-DD HH:mm:ss")
+      );
+      this.options.series = [
+        {
+          name: "订单金额",
+          type: "bar",
+          barMaxWidth: "30%",
+          data: data.map(v => v.orderAmount)
+        }
+      ];
+    },
+    // 查询
+    query() {
+      this.getGoodsTotal();
+    }
+  },
+  // 挂载后
+  mounted() {
+    // 调用获取
+    this.getGoodsTotal();
   }
 };
 </script>
@@ -74,28 +116,19 @@ export default {
   flex-direction: column;
   height: 100%;
   margin: 0 20px;
+
   .time {
     display: flex;
     flex: 0 0 40px;
-    margin-bottom: 40px;
-    .block {
-      height: 36px;
+    margin-bottom: 25px;
+    .date {
       margin-right: 10px;
-      .demonstration {
-        margin-right: 10px;
-      }
     }
     /deep/.el-button {
       align-self: center;
       width: 60px;
       height: 36px;
     }
-  }
-  .OrderStatisticsEcharts {
-    flex: 1;
-    width: 100%;
-    background-color: #fff;
-    height: 100%;
   }
 }
 </style>

@@ -63,13 +63,22 @@ export default {
       if (!val) {
         callback(new Error("请输入您的密码"));
       } else if (this.type === "text") {
+        // 判断密码是否为中文
         if (!Chinese.test(val)) {
           callback(new Error("密码不能是中文"));
         }
         // 判断是否通过
       } else if (!PwdReg.test(val)) {
-        callback(new Error("最少3位，包括至少一位小写字母，一个数字"));
+        callback(new Error("最少3位，包括小写字母、大写字母，特殊符号、数字"));
         // 成功
+      } else {
+        callback();
+      }
+    };
+    const checktext = (rule, val, callback) => {
+      // 判断密码是否为中文
+      if (!Chinese.test(val)) {
+        callback(new Error("密码不能是中文"));
       } else {
         callback();
       }
@@ -79,7 +88,8 @@ export default {
         //用户名
         account: "",
         //密码
-        password: ""
+        password: "",
+        text: ""
       },
       //用户名提示信息
       userNameMsg: "",
@@ -98,7 +108,8 @@ export default {
         //账号
         account: { required: true, validator: checkAcc, trigger: "blur" },
         //密码
-        password: { required: true, validator: checkPwd, trigger: "blur" }
+        password: { required: true, validator: checkPwd, trigger: "blur" },
+        password: { required: true, validator: checktext, trigger: "blur" }
       }
     };
   },

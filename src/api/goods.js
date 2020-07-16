@@ -20,7 +20,7 @@ export function delCate(params) {
 
 /*  添加分类 */
 export function addCate(params) {
-    return req.post("/goods/addcate", params);
+    return req.post("/goods/add", params);
 }
 
 /*  查询分类名称 */

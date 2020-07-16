@@ -124,7 +124,7 @@ export default {
         consignee: "",
         phone: "",
         orderState: "",
-        date: JSON.stringify([])
+        date: []
       },
       // 查看详情表单
       seeForm: {},
@@ -164,14 +164,12 @@ export default {
           }
         ]
       },
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
-      value2: "",
+
       // 表格数据
       tableData: []
     };
   },
   methods: {
-    handleClick(row) {},
     // 获取去订单列表
     async getOrderList() {
       let { total, data } = await getOrderList({
@@ -181,12 +179,15 @@ export default {
         consignee: this.queryForm.consignee,
         phone: this.queryForm.phone,
         orderState: this.queryForm.orderState,
-        date: this.queryForm.date
+        date: JSON.stringify(this.queryForm.date)
       });
+      console.log();
       // 处理ctime时间格式
       data.forEach(v => {
         v.orderTime = moment(v.orderTime).format("YYYY-MM-DD HH:mm:ss");
         v.deliveryTime = moment(v.deliveryTime).format("YYYY-MM-DD HH:mm:ss");
+        // 处理价格  保存两位小数
+        v.orderAmount = v.orderAmount.toFixed(2);
       });
       // 渲染
       this.tableData = data;

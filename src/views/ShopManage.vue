@@ -228,6 +228,8 @@ export default {
       data.pics = data.pics.map(v => ({
         url: this.baseImgUrl + v
       }));
+      //配送费保留两位小数
+      data.deliveryPrice = data.deliveryPrice.toFixed(2);
       // 处理商品头像
       data.avatar = this.baseImgUrl + data.avatar;
     }

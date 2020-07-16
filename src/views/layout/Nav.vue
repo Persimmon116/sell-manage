@@ -82,7 +82,7 @@ export default {
     curActive() {
       if (this.$route.path === "/order/order-edit")
         return "/order/order-manage";
-      return this.$route.path;
+      // return this.$route.path;
     }
   }
 };
@@ -125,17 +125,17 @@ export default {
         height: 0 !important;
         padding: 0;
       }
-      .el-menu-item {
+      /deep/.el-menu-item {
         background-color: #304156 !important;
+        &:hover {
+          background-color: rgb(38, 52, 69) !important;
+        }
         a {
           text-decoration: none;
           display: inline-block;
           width: 100%;
           height: 100%;
           color: #fff;
-          &.router-link-active {
-            color: #409eff;
-          }
         }
       }
       a {

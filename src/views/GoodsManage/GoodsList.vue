@@ -248,6 +248,8 @@ export default {
       // 处理ctime时间格式
       data.forEach(v => {
         v.ctime = moment(v.ctime).format("YYYY-MM-DD HH:mm:ss");
+        // 处理价格  保存两位小数
+        v.price = v.price.toFixed(2);
       });
 
       // 边界判断 如果当前页码没有数据了 且 当前页码不是第一页

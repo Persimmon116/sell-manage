@@ -104,7 +104,8 @@ export default {
       // 发送请求
       // let { code } = await addCate(this.goodsAddForm);
       let { code } = await addCate(this.goodsAddForm);
-      console.log(code);
+      console.log(this.goodsAddForm);
+
       if (code === 0) {
         // 跳转到商品列表
         this.$router.push("/goodsmanage/goods-list");

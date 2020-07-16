@@ -11,3 +11,13 @@ export function getOrderList(params) {
 export function editOrder(params) {
     return req.post("/order/edit", params);
 }
+
+/*  获取报表数据 */
+export function getChartData() {
+    return req.get("/order/totaldata");
+}
+
+/*  获取商品统计 */
+export function getGoodsTotal(params) {
+    return req.get("/order/ordertotal", params);
+}
