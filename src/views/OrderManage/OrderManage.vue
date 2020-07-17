@@ -172,6 +172,13 @@ export default {
   methods: {
     // 获取去订单列表
     async getOrderList() {
+      // 发送请求前处理参数
+      if (this.queryForm.date != null) {
+        this.queryForm.date = this.queryForm.date.map(v =>
+          moment(v).format("YYYY-MM-DD HH:mm:ss")
+        );
+      }
+      console.log(this.queryForm.date);
       let { total, data } = await getOrderList({
         currentPage: this.currentPage,
         pageSize: this.pageSize,
@@ -208,13 +215,7 @@ export default {
     // 重置
     reset() {
       // 清空表单
-      this.queryForm = {
-        orderNo: "",
-        consignee: "",
-        phone: "",
-        orderState: "",
-        date: JSON.stringify([])
-      };
+      this.queryForm = {};
       // 从第一页显示;
       this.currentPage = 1;
       this.getOrderList();

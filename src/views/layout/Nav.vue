@@ -15,62 +15,46 @@
         @open="handleOpen"
         @close="handleClose"
       >
-        <el-menu-item index="/home">
-          <i class="el-icon-s-home"></i>
-          <span slot="title">后台首页</span>
-        </el-menu-item>
-        <el-menu-item index="/order/order-manage">
-          <i class="el-icon-document"></i>
-          <span slot="title">订单管理</span>
-        </el-menu-item>
+        <template v-for=" menu in nav">
+          <el-menu-item
+            v-if="menu.children && menu.children.length === 1 || menu.path =='/order'"
+            :key="menu.path"
+            :index="menu.children && menu.children.length && menu.children[0].path !== '' ? menu.children[0].path : menu.path"
+          >
+            <i :class="menu.meta.icon"></i>
+            <span slot="title">{{menu.meta.title}}</span>
+          </el-menu-item>
 
-        <el-submenu index="3">
-          <template slot="title">
-            <i class="el-icon-shopping-bag-2"></i>
-            <span>商品管理</span>
-          </template>
-          <el-menu-item index="/goodsmanage/goods-list">商品列表</el-menu-item>
-          <el-menu-item index="/goodsmanage/goods-add">商品添加</el-menu-item>
-          <el-menu-item index="/goodsmanage/goods-sort">商品分类</el-menu-item>
-        </el-submenu>
-        <el-menu-item index="/shopmanage">
-          <i class="el-icon-s-shop"></i>
-          <span slot="title">店铺管理</span>
-        </el-menu-item>
+          <el-submenu v-else :index="menu.path" :key="menu.path">
+            <template slot="title">
+              <i :class="menu.meta.icon"></i>
+              <span>{{menu.meta.title}}</span>
+            </template>
 
-        <el-submenu index="5">
-          <template slot="title">
-            <i class="el-icon-user-solid"></i>
-            <span>账号管理</span>
-          </template>
-          <el-menu-item index="/accountmanage/account-list">账号列表</el-menu-item>
-          <el-menu-item index="/accountmanage/account-add">添加账号</el-menu-item>
-          <el-menu-item index="/accountmanage/modify-pwd">修改密码</el-menu-item>
-          <el-menu-item index="/accountmanage/personal">个人中心</el-menu-item>
-        </el-submenu>
-        <el-submenu index="6">
-          <template slot="title">
-            <i class="el-icon-s-data"></i>
-            <span>销售统计</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="/salestatistics/goods-tatistics">商品统计</el-menu-item>
-            <el-menu-item index="/salestatistics/order-statistics">订单统计</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+            <el-menu-item v-for=" v in menu.children" :key="v.path" :index="v.path">{{v.meta.title}}</el-menu-item>
+          </el-submenu>
+        </template>
       </el-menu>
     </div>
   </div>
 </template>
 
 <script>
+import local from "@/utils/local";
 export default {
   // 数据
   data() {
     return {
       titleImg: require("@/assets/images/elm.png"),
-      routerList: ["首页", "账号管理", "添加账号"]
+      // 导航栏
+      nav: []
     };
+  },
+  // 加载完成后
+  created() {
+    // 从本地拿数据
+    this.nav = local.get("nav");
+    console.log(this.nav);
   },
   //   方法
   methods: {
@@ -80,9 +64,10 @@ export default {
   //   计算属性
   computed: {
     curActive() {
-      if (this.$route.path === "/order/order-edit")
+      if (this.$route.path === "/order/order-edit") {
         return "/order/order-manage";
-      // return this.$route.path;
+      }
+      return this.$route.path;
     }
   }
 };

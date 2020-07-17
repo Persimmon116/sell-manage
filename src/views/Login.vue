@@ -22,7 +22,7 @@
               placeholder="请输入密码"
               v-model="formData.password"
               prefix-icon="el-icon-lock"
-              @change.native.enter="submit"
+              @keydown.native.enter="submit"
             ></el-input>
           </el-form-item>
           <span class="yan" v-for="(v) in 2" :key="v">
@@ -41,6 +41,7 @@
 <script>
 import { PwdReg, NameReg, Chinese } from "@/utils/reg";
 import local from "@/utils/local";
+import { createRouter } from "@/router";
 // 引入axios函数
 import { checkLogin } from "@/api/account";
 export default {
@@ -130,13 +131,15 @@ export default {
           // 判断
           if (code === 0) {
             local.set("token", token); // 1. 把token存入本地
+            local.set("role", role); //2.把role存入本地
+            // 调用创建动态路由
+            createRouter();
             // 1s后跳转
             setTimeout(() => {
               this.$router.push("/"); // 跳转到后台首页
             }, 1000);
           }
         } else {
-          console.log("不可以提交");
           return false;
         }
       });

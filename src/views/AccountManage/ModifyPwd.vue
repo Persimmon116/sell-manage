@@ -23,7 +23,7 @@
         <!-- 新密码 -->
         <el-form-item label="新密码" prop="newPassword">
           <el-input
-            type="text"
+            type="password"
             v-model="resetForm.newPassword"
             autocomplete="off"
             placeholder="请输入新密码"
@@ -33,11 +33,11 @@
         <!-- 确认新密码 -->
         <el-form-item label="确认新密码" prop="confirmnewPwd">
           <el-input
-            type="text"
+            type="password"
             v-model="resetForm.confirmnewPwd"
             autocomplete="off"
             placeholder="请再次输入新密码"
-            @change.native.enter="submitForm"
+            @keydown.native.enter="submitForm"
           ></el-input>
         </el-form-item>
 

@@ -79,6 +79,8 @@ export default {
       } else {
         // 弹框提示
         this.$message({ type: "success", message: "欢迎下次登录" });
+        // 退出刷新页面
+        location.reload();
         // 清除本地存储
         local.clear();
         // 跳转到登录页面

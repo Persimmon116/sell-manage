@@ -105,6 +105,7 @@ export default {
         state: this.editForm.state
       });
       if (code === 0) {
+        console.log(11);
         // 刷新列表
         this.obtainList();
         this.editForm = { cateName: "", state: "" };
